@@ -1,0 +1,42 @@
+results = []
+all_cols = pd.get_dummies(df[actionables], drop_first=True).columns
+print(all_cols)
+
+for i in range(4):
+    X = df[df['Group'] == i][actionables]
+    y = df[df['Group'] == i]['Churn Value']
+
+    X_encoded = pd.get_dummies(X, drop_first=True)
+
+    X_train, X_test, y_train, y_test = train_test_split(X_encoded, y, test_size = 0.2, random_state = 1)
+
+    grid_search.fit(X_train, y_train)
+    test_score = grid_search.best_estimator_.score(X_test, y_test)
+
+    best_model = grid_search.best_estimator_
+
+    explainer = shap.TreeExplainer(best_model)
+    shap_values = explainer.shap_values(X_test)
+
+    print(X_train.shape)
+    print(X_test.shape)
+    print(shap_values[1].shape)
+    shap.summary_plot(shap_values, X_test)
+
+    mean_shap_by_group = pd.Series(abs(shap_values[1]).mean(axis=0), index=X_train.columns).reset_index()
+    mean_shap_by_group.columns = ["Feature", "Mean_SHAP"]
+    mean_shap_by_group["Group"] = i
+
+
+    results.append(mean_shap_by_group)
+
+mean_shap_values = pd.concat(results, ignore_index=True)
+print(mean_shap_values.head(10))
+
+
+    
+
+
+
+
+
