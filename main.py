@@ -83,7 +83,7 @@ predictor_model = RandomForestClassifier(n_estimators = 100, random_state = 1)
 parameter_grid = {
     'n_estimators': [100, 200, 400],
     'max_depth': [5, 10, 20],
-    'min_samples_split': [1, 2, 4],
+    'min_samples_split': [2, 4],
     'min_samples_leaf': [2, 4, 8]
 }
 
